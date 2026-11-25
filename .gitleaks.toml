@@ -1,0 +1,7 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "360dialog header uses a configuration reference, not a literal credential"
+regexTarget = "line"
+regexes = ['''D360-API-KEY.*this\.cfg\.D360_API_KEY''']

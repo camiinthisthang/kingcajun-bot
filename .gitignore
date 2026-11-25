@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+data/
+tmp/
+output/
+outputs/
+records/
+coverage/
+*.log
+.DS_Store
+.first-look-preview/
+.pos-preview/
+.vercel/

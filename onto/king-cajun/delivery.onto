@@ -1,0 +1,55 @@
+project KingCajunScheduledOrders
+
+actor OrderBot
+  @type system
+  @boundary external
+  @affiliation internal
+  @access none
+
+actor Dispatcher
+  @type person
+  @affiliation internal
+  @access authenticated
+  @signup invite
+
+object Booking
+  channel: delivery | pickup
+  status: proposed | reserved @final
+  noticeMinutes: int
+  serviceOpen: bool
+  pinConfirmed: bool
+  nightlyCount: int
+  groupCount: int
+  driverFree: bool
+
+object Trip
+  status: planned | out | returned @final
+  driverAvailable: bool
+  departureDue: bool
+  ordersReady: bool
+
+story Scheduling
+  OrderBot creates Booking
+    sets Booking.status to "proposed"
+  OrderBot creates Trip
+    sets Trip.status to "planned"
+  OrderBot reserves Booking
+    requires Booking.status is "proposed"
+    requires Booking.noticeMinutes is at least 60
+    requires Booking.serviceOpen is true
+    requires Booking.channel is "pickup" or Booking.pinConfirmed is true
+    requires Booking.channel is "pickup" or Booking.nightlyCount is at most 12
+    requires Booking.channel is "pickup" or Booking.groupCount is at most 3
+    requires Booking.channel is "pickup" or Booking.driverFree is true
+    sets Booking.status to "reserved"
+
+story Dispatch
+  Dispatcher dispatches Trip
+    requires Trip.status is "planned"
+    requires Trip.driverAvailable is true
+    requires Trip.departureDue is true
+    requires Trip.ordersReady is true
+    sets Trip.status to "out"
+  Dispatcher returns Trip
+    requires Trip.status is "out"
+    sets Trip.status to "returned"

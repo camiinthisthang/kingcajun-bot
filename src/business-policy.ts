@@ -1,0 +1,4 @@
+import {deliveryCoveragePolicy} from './services/delivery-coverage.js';
+// Shared by checkout and both conversational assistants so FAQ and charges agree.
+export {paymentPolicy} from '../admin-dashboard/src/payment-policy.mjs';
+export const businessFacts={instagram:'https://www.instagram.com/kingcajun.co/',instagramHandle:'@kingcajun.co',combosFromCop:87000,customOrdersCanCostLessThanCombo:true,deliveryOnly:false,noDineIn:false,pickupAvailable:true,ownCourierAvailable:true,deliveryCoverage:deliveryCoveragePolicy,deliveryArea:'Zonas del mapa: Laureles-Estadio, La Candelaria, Belén, Guayabal, El Poblado y Envigado. No toda el área metropolitana',publicOpeningDate:'2026-11-26',address:'Calle 3S #43A-40, El Poblado, Medellín, al lado del Hotel Estelar',hours:'Jueves y viernes 5:30–10 p. m.; sábado y domingo 4:30–10 p. m.',reservations:false,deliveryDays:['sábado','domingo']} as const;

@@ -1,0 +1,23 @@
+{
+  "name": "king-cajun-admin-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.mjs",
+    "start": "node src/server.mjs",
+    "seed:demo": "tsx scripts/seed-demo.ts",
+    "check": "node --check src/server.mjs && node --check src/db.mjs && node --check public/app.js && node --check src/postgres.mjs && node --check src/kitchen-domain.mjs && node --check src/kitchen-store.mjs && node --check src/kitchen-sync.mjs && node --check public/kitchen.js && node --check public/costing.js && node --check src/costing/pricing.mjs && node --check src/costing/store.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@trigramco/ontolang": "file:vendor/ontolang-52b59c0.tgz",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "pg": "^8.23.0",
+    "tsx": "^4.19.3",
+    "web-push": "^3.6.7"
+  }
+}

@@ -1,0 +1,100 @@
+project KingCajun
+  @description "Pedidos de mesa y domicilios con cupos, permisos y cancelaciones verificables."
+
+actor Waiter
+  @type person
+  @affiliation internal
+  @access authenticated
+  @signup invite
+
+actor Cook
+  @type person
+  @affiliation internal
+  @access authenticated
+  @signup invite
+
+actor Manager
+  @type person
+  @affiliation internal
+  @access authenticated
+  @signup invite
+
+actor DeliveryBot
+  @type system
+  @boundary external
+  @affiliation internal
+  @access none
+
+object Slot
+  name: string
+  capacity: int
+  tickets: Ticket[]
+  booked: int = count of Ticket in tickets where status is not "cancelled"
+  @rule Slot.capacity is more than 0
+  @rule Slot.booked is at most Slot.capacity
+
+object Ticket
+  reference: string
+  channel: table | delivery
+  status: reserved | new | cooking | ready | dispatched | served @final | cancel_requested | cancelled @final
+  slot: Slot
+  started: bool @default(false)
+  approved: bool @default(false)
+  confirmed: bool @default(false)
+  paymentRequired: bool @default(false)
+  paymentVerified: bool @default(false)
+
+story Ordering
+  Waiter creates Ticket
+    requires Ticket.channel is "table"
+    sets Ticket.status to "new"
+  DeliveryBot reserves Ticket for Slot
+    # Onto evaluates this creation gate with the candidate already counted.
+    # Capacity 1 therefore permits the first ticket and refuses the second.
+    requires Slot.booked is at most Slot.capacity
+    requires Ticket.channel is "delivery"
+    sets Ticket.slot to Slot
+    sets Ticket.status to "reserved"
+  DeliveryBot accepts Ticket
+    requires Ticket.status is "reserved"
+    requires Ticket.confirmed is true
+    requires Ticket.paymentRequired is false or Ticket.paymentVerified is true
+    sets Ticket.status to "new"
+  DeliveryBot releases Ticket
+    requires Ticket.status is "reserved"
+    sets Ticket.status to "cancelled"
+
+story Kitchen
+  Cook starts Ticket
+    requires Ticket.status is "new"
+    sets Ticket.started to true
+    sets Ticket.status to "cooking"
+  Cook finishes Ticket
+    requires Ticket.status is "cooking"
+    sets Ticket.status to "ready"
+  Waiter serves Ticket
+    requires Ticket.channel is "table"
+    requires Ticket.status is "ready"
+    sets Ticket.status to "served"
+  Waiter dispatches Ticket
+    requires Ticket.channel is "delivery"
+    requires Ticket.status is "ready"
+    sets Ticket.status to "dispatched"
+  Waiter delivers Ticket
+    requires Ticket.status is "dispatched"
+    sets Ticket.status to "served"
+
+story Cancellations
+  Waiter requests Ticket
+    requires Ticket.status is "new" or Ticket.status is "cooking" or Ticket.status is "ready"
+    sets Ticket.status to "cancel_requested"
+  DeliveryBot requests Ticket
+    requires Ticket.status is "new" or Ticket.status is "cooking" or Ticket.status is "ready"
+    sets Ticket.status to "cancel_requested"
+  Manager approves Ticket
+    requires Ticket.status is "cancel_requested"
+    sets Ticket.approved to true
+  Cook cancels Ticket
+    requires Ticket.status is "cancel_requested"
+    requires Ticket.started is false or Ticket.approved is true
+    sets Ticket.status to "cancelled"

@@ -1,0 +1,386 @@
+{
+  "ingredients": [
+    {
+      "id": "shrimp",
+      "name": "Camarón",
+      "unit": "g",
+      "method": "portion",
+      "basis": "Peso antes de cocinar",
+      "packingNote": "Pesar la porción antes de cocinar y mantenerla identificada. El número aproximado de camarones no reemplaza el peso."
+    },
+    {
+      "id": "imitation-crab",
+      "name": "Imitación de cangrejo",
+      "unit": "g",
+      "method": "portion",
+      "basis": "Peso antes de cocinar",
+      "packingNote": "Pesar la porción antes de cocinar. Unas 7 piezas por 100 g es una referencia, no un conteo obligatorio."
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 1,
+      "id": "snow-cluster",
+      "name": "Cangrejo de nieve · racimo",
+      "basis": "Racimo entero: 4 patas, pinza y pieza del cuerpo",
+      "packLabel": "racimos enteros",
+      "packingNote": "Empacar 1 racimo entero por unidad, aproximadamente 180 g. Precio fijo por racimo. No cortar ni ajustar al gramo."
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 1,
+      "id": "snow-loose-leg",
+      "name": "Cangrejo de nieve · pata suelta",
+      "basis": "Pata suelta entera",
+      "packLabel": "patas sueltas",
+      "packingNote": "Las patas sueltas son adicionales a los racimos completos del combo."
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 1,
+      "id": "king-leg",
+      "name": "Cangrejo rey · pata normal",
+      "basis": "Pata entera, descongelada, antes de cocinar",
+      "packLabel": "patas enteras",
+      "packingNote": "Empacar 1 pata entera por unidad, aproximadamente 300 g. Precio fijo: no cortar ni ajustar al gramo. Apartar patas menores de 250 g o mayores de 350 g. Rango inicial sugerido; revisar con los pesos reales.",
+      "screening": {
+        "minGrams": 250,
+        "maxGrams": 350
+      }
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 3,
+      "id": "corn",
+      "name": "Mazorca",
+      "basis": "Mazorca entera antes de cortar",
+      "packLabel": "tercios de mazorca",
+      "packingNote": "Cada mazorca se corta en 3. Aplica a combos y pedidos armados."
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 4,
+      "id": "potato",
+      "name": "Papa",
+      "basis": "Papa entera antes de cortar",
+      "packLabel": "cuartos de papa",
+      "packingNote": "Cada papa se corta en 4. Aplica a combos y pedidos armados."
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 1,
+      "id": "sausage",
+      "name": "Salchicha",
+      "basis": "Salchicha entera",
+      "packLabel": "salchichas"
+    },
+    {
+      "method": "count",
+      "unit": "piece",
+      "packFactor": 1,
+      "id": "egg",
+      "name": "Huevo cocido",
+      "basis": "Huevo entero",
+      "packLabel": "huevos cocidos"
+    }
+  ],
+  "products": [
+    {
+      "id": "add-imitation",
+      "name": "Adición: imitación de cangrejo",
+      "priceCop": 21500,
+      "unit": "g",
+      "baseQuantity": 100,
+      "components": [
+        {
+          "ingredientId": "imitation-crab",
+          "quantity": 100
+        }
+      ],
+      "description": "100 g; unas 7 piezas como referencia.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "add-shrimp",
+      "name": "Adición: camarón",
+      "priceCop": 17000,
+      "unit": "g",
+      "baseQuantity": 100,
+      "components": [
+        {
+          "ingredientId": "shrimp",
+          "quantity": 100
+        }
+      ],
+      "description": "100 g; unos 7 camarones como referencia.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "add-snow",
+      "name": "Adición: cangrejo de nieve",
+      "priceCop": 100500,
+      "unit": "piece",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "snow-cluster",
+          "quantity": 1
+        }
+      ],
+      "description": "1 racimo completo, aproximadamente 180 g. Precio fijo por pieza.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "add-king",
+      "name": "Adición: cangrejo rey, pata normal",
+      "priceCop": 250000,
+      "unit": "piece",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "king-leg",
+          "quantity": 1
+        }
+      ],
+      "description": "1 pata entera, aproximadamente 300 g. Precio fijo por pieza.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "side-corn",
+      "name": "Mazorca",
+      "priceCop": 9000,
+      "unit": "piece",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "corn",
+          "quantity": 1
+        }
+      ],
+      "description": "1 mazorca = 3 cortes.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "side-potato",
+      "name": "Papa",
+      "priceCop": 4500,
+      "unit": "piece",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "potato",
+          "quantity": 1
+        }
+      ],
+      "description": "1 papa = 4 cuartos.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "side-sausage",
+      "name": "Salchicha",
+      "priceCop": 5500,
+      "unit": "piece",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "sausage",
+          "quantity": 1
+        }
+      ],
+      "description": "",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "side-egg",
+      "name": "Huevo cocido",
+      "priceCop": 2000,
+      "unit": "piece",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "egg",
+          "quantity": 1
+        }
+      ],
+      "description": "",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "combo-small",
+      "name": "Combo pequeño",
+      "priceCop": 85000,
+      "unit": "portion",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "shrimp",
+          "quantity": 110
+        },
+        {
+          "ingredientId": "imitation-crab",
+          "quantity": 70
+        },
+        {
+          "ingredientId": "corn",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "potato",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "sausage",
+          "quantity": 3
+        },
+        {
+          "ingredientId": "egg",
+          "quantity": 2
+        }
+      ],
+      "description": "1–2 personas. Salsa de la casa y picante incluidos.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "combo-medium",
+      "name": "Combo mediano con cangrejo de nieve",
+      "priceCop": 212000,
+      "unit": "portion",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "snow-cluster",
+          "quantity": 1
+        },
+        {
+          "ingredientId": "snow-loose-leg",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "shrimp",
+          "quantity": 160
+        },
+        {
+          "ingredientId": "corn",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "potato",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "sausage",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "egg",
+          "quantity": 2
+        }
+      ],
+      "description": "2 personas. Salsa de la casa y picante incluidos.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "combo-family",
+      "name": "Combo familiar",
+      "priceCop": 432500,
+      "unit": "portion",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "snow-cluster",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "snow-loose-leg",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "shrimp",
+          "quantity": 350
+        },
+        {
+          "ingredientId": "imitation-crab",
+          "quantity": 250
+        },
+        {
+          "ingredientId": "corn",
+          "quantity": 3
+        },
+        {
+          "ingredientId": "potato",
+          "quantity": 4
+        },
+        {
+          "ingredientId": "sausage",
+          "quantity": 4
+        },
+        {
+          "ingredientId": "egg",
+          "quantity": 4
+        }
+      ],
+      "description": "3–4 personas. Salsa de la casa y picante incluidos.",
+      "requiresHeat": true,
+      "includesSauce": true
+    },
+    {
+      "id": "combo-premium",
+      "name": "Combo premium",
+      "priceCop": 591000,
+      "unit": "portion",
+      "baseQuantity": 1,
+      "components": [
+        {
+          "ingredientId": "king-leg",
+          "quantity": 1
+        },
+        {
+          "ingredientId": "snow-cluster",
+          "quantity": 2
+        },
+        {
+          "ingredientId": "shrimp",
+          "quantity": 240
+        },
+        {
+          "ingredientId": "imitation-crab",
+          "quantity": 160
+        },
+        {
+          "ingredientId": "corn",
+          "quantity": 3
+        },
+        {
+          "ingredientId": "potato",
+          "quantity": 3
+        },
+        {
+          "ingredientId": "sausage",
+          "quantity": 3
+        },
+        {
+          "ingredientId": "egg",
+          "quantity": 2
+        }
+      ],
+      "description": "2–3 personas. Salsa de la casa y picante incluidos.",
+      "requiresHeat": true,
+      "includesSauce": true
+    }
+  ]
+}

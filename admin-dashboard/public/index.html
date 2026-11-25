@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="Dashboard operativo privado de King Cajun">
+    <title>King Cajun · Dashboard operativo</title>
+    <link rel="stylesheet" href="/admin-assets/vendor/leaflet/leaflet.css">
+    <link rel="stylesheet" href="/admin-assets/styles.css?v=home-operations-20261025">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="King Cajun inicio"><span class="brand-mark">KC</span><span>King Cajun<small>Operations</small></span></a>
+        <nav aria-label="Secciones">
+          <a class="nav-link active" href="#overview"><span>01</span>Resumen</a>
+          <a class="nav-link" href="/bank-payments"><span>↗</span>Pagos bancarios</a>
+          <a class="nav-link" href="#finances"><span>↗</span>Finanzas</a>
+          <a class="nav-link" href="#orders"><span>03</span>Por día</a>
+          <a class="nav-link" href="/routes"><span>↗</span>Rutas y domiciliarios</a>
+          <a class="nav-link" href="/waitlist"><span>↗</span>Lista · nuevos cupos</a>
+          <a class="nav-link" href="/flow"><span>↗</span>Editor de WhatsApp</a>
+          <a class="nav-link" href="/mesas"><span>↗</span>Pedidos en mesa</a>
+          <a class="nav-link" href="/marketing"><span>↗</span>Marketing and content</a>
+          <a class="nav-link" href="/reservas"><span>↗</span>Invitaciones y reservas</a>
+          <a class="nav-link" href="/costos"><span>↗</span>Costos y menú</a>
+          <a class="nav-link" href="/kitchen"><span>↗</span>Cocina</a>
+          <a class="nav-link" href="#marketing"><span>04</span>Marketing</a>
+          <a class="nav-link" href="#goals"><span>05</span>Metas</a>
+        </nav>
+        <div class="sidebar-foot">
+          <div class="source-state"><span class="live-dot"></span><div><strong>Fuente conectada</strong><small>WhatsApp order DB</small></div></div>
+          <button class="logout" id="logout" type="button">Cerrar sesión</button>
+        </div>
+      </aside>
+
+      <main>
+        <header class="topbar" id="overview">
+          <div><p class="eyebrow">Panel administrativo</p><h1>Esta semana en King Cajun.</h1><p class="subtitle">Tomamos pedidos de lunes a viernes · entregamos de viernes a domingo.</p></div>
+          <div class="topbar-tools"><a class="button primary" href="/routes">Rutas y domiciliarios →</a><div class="sync-pill"><span class="live-dot"></span><span><strong id="sync-label">Sincronizando</strong><small id="sync-time">—</small></span></div></div>
+        </header>
+
+        <nav class="admin-view-tabs" aria-label="Vistas"><a href="#overview">Esta semana</a><a href="#finances">Finanzas</a><a href="/routes">Rutas</a><a href="#confirmations">Confirmaciones WhatsApp</a><a href="#marketing">Influencers y contenido</a><a href="#goals">Metas de negocio</a></nav>
+        <div id="operations-home">
+        <section class="week-strip" aria-label="Semana de operación"><div><p class="eyebrow">Por fecha de entrega o recogida</p><h2 id="week-label">Esta semana</h2><p>Incluye todos los pedidos programados para estas fechas, aunque se hayan creado antes.</p></div><div class="section-actions"><button class="button secondary" id="previous-week" type="button" aria-label="Semana anterior">←</button><button class="button primary" id="current-week" type="button">Esta semana</button><button class="button secondary" id="next-week" type="button" aria-label="Semana siguiente">→</button><button class="button secondary" id="all-history" type="button">Todo el historial</button></div></section>
+        <section class="filter-bar" aria-label="Filtros del dashboard">
+          <label><span>Desde</span><input id="filter-from" type="date"></label>
+          <label><span>Hasta</span><input id="filter-to" type="date"></label>
+          <label><span>Franja</span><select id="filter-window"><option value="">Todas las franjas</option></select></label>
+          <label><span>Estado</span><select id="filter-status"><option value="">Todos los estados</option><option value="awaiting_payment">Pendiente de pago</option><option value="delivery_review">Pendiente de coordinar</option><option value="confirmed">Confirmado</option><option value="payment_review">Revisión de pago</option><option value="fulfilled">Entregado</option><option value="cancelled">Cancelado</option><option value="expired">Expirado</option></select></label>
+          <button class="button secondary" id="refresh-dashboard" type="button">Actualizar</button><button class="button secondary" id="clear-filters" type="button">Restablecer semana</button>
+        </section>
+
+        <div class="truth-note" id="truth-note"><span class="shield">✓</span><span><strong>Conectando a tus pedidos.</strong> Consultaremos la misma base de datos del bot de WhatsApp.</span></div>
+
+        <section class="kpi-grid" aria-label="Indicadores principales">
+          <article class="kpi-card"><div class="kpi-top"><span>Pedidos confirmados</span><span class="kpi-symbol">#</span></div><strong id="kpi-orders">—</strong><small id="kpi-orders-note">Solicitudes pendientes fuera del total</small></article>
+          <article class="kpi-card"><div class="kpi-top"><span>Solicitudes pendientes</span><span class="kpi-symbol">↗</span></div><strong id="kpi-pending">—</strong><small>Aún no cuentan como pedidos confirmados</small></article>
+        </section>
+
+        <section class="panel order-mix-panel" aria-labelledby="order-mix-title">
+          <div class="panel-head"><div><p class="eyebrow">Qué vamos a preparar</p><h2 id="order-mix-title">Pedidos por tipo</h2><p id="order-mix-total" class="order-mix-total" aria-live="polite">Cargando pedidos…</p></div><label class="order-mix-filter"><span>Día de entrega</span><select id="order-mix-day"><option value="">Todos los días</option></select></label></div>
+          <div id="order-mix-cards" class="order-mix-cards"></div>
+          <p id="order-mix-note" class="order-mix-note">Cada pedido cuenta una vez. Los combos con adicionales siguen contando como combos.</p>
+        </section>
+
+        <section class="analytics-grid">
+          <article class="panel status-panel">
+            <div class="panel-head"><div><p class="eyebrow">Operación</p><h2>Estado de pedidos</h2></div></div>
+            <div id="status-list" class="status-list"></div>
+          </article>
+        </section>
+
+
+        <section id="orders" class="operations-section" aria-labelledby="operations-title">
+          <div class="section-title"><div><p class="eyebrow">Despacho</p><h2 id="operations-title">Por día</h2><p>Una misma selección para la lista y el mapa de domicilios.</p></div></div>
+          <div id="delivery-days" class="day-tabs" role="group" aria-label="Día de entrega"></div><div id="delivery-periods" class="day-tabs" aria-label="Franja de entrega" hidden></div>
+          <div class="operations-toolbar">
+            <label><span>Buscar</span><input id="order-search" type="search" placeholder="Cliente, dirección o pedido"></label>
+            <label><span>Mostrar</span><select id="order-scope"><option value="confirmed">Pedidos confirmados</option><option value="pending">Solicitudes pendientes</option><option value="all">Todos los registros</option></select></label>
+            <label><span>Modalidad</span><select id="order-method"><option value="">Todas</option><option value="delivery">Domicilio</option><option value="pickup">Pickup</option></select></label>
+            <label><span>Ordenar por</span><select id="order-sort"><option value="delivery">Día y dirección</option><option value="customer">Cliente · A–Z</option><option value="address">Dirección · A–Z</option><option value="total-desc">Total · mayor a menor</option><option value="total-asc">Total · menor a mayor</option><option value="newest">Más recientes</option></select></label>
+          </div>
+          <section id="delivery-requests" class="delivery-requests" hidden aria-label="Horarios especiales de entrega"></section>
+          <p class="operations-summary" id="operations-summary" aria-live="polite"></p>
+          <article class="panel delivery-map-panel">
+            <div class="panel-head"><div><h2>Mapa de entregas</h2><p id="map-status" role="status">Cargando pedidos…</p></div><div class="section-actions"><button class="button secondary" id="map-retry" type="button" hidden>Reintentar</button><button class="button secondary" id="map-fit" type="button">Ver todos</button></div></div>
+            <div id="map-legend" class="map-legend"></div>
+            <p id="map-tile-warning" class="map-warning" hidden>No se pudo cargar parte del mapa. Comprueba tu conexión.</p>
+            <div class="map-layout"><div id="delivery-map" aria-label="Mapa de direcciones de entrega"></div><ol id="map-locations" class="map-locations" aria-label="Direcciones en el mapa"></ol></div>
+            <p class="map-footnote">Usa «Resolver ubicación» para buscar el edificio en Google Maps y guardar su pin. Los puntos revisados quedan guardados para ese pedido. Pickup, cancelados y expirados no aparecen como paradas.</p>
+          </article>
+          <article class="panel table-panel">
+          <div class="panel-head"><div><p class="eyebrow">Operación</p><h2>Pedidos y solicitudes</h2></div><span class="record-count" id="order-count">0 registros</span></div>
+          <div class="table-scroll"><table><thead><tr><th>Pedido</th><th>Cliente</th><th>Dirección</th><th>Franja</th><th>Estado</th><th>Código</th><th>Pago</th><th class="numeric">Subtotal</th><th class="numeric">Descuento</th><th class="numeric">Total</th><th class="numeric">Utilidad est.</th></tr></thead><tbody id="orders-body"></tbody></table></div>
+          </article>
+          <article class="panel table-panel" aria-labelledby="waitlist-title">
+            <div class="panel-head"><div><p class="eyebrow">Si se libera un cupo</p><h2 id="waitlist-title">Lista de espera</h2><p>No son pedidos confirmados. Contacta al cliente si aparece un cupo; su respuesta no crea una reserva.</p></div></div>
+            <div class="table-scroll"><table><thead><tr><th>Cliente</th><th>Franja solicitada</th><th>Cupo regular</th><th>Seguimiento</th><th></th></tr></thead><tbody id="waitlist-body"></tbody></table></div>
+          </article>
+        </section>
+
+        </div>
+        <section id="finances" hidden class="section-block"></section>
+        <section id="confirmations" hidden class="panel" aria-labelledby="staff-confirmation-title" style="padding:24px">
+          <h2 id="staff-confirmation-title">Confirmaciones por WhatsApp</h2>
+          <p>Desde WhatsApp Business: envía CONFIRMADO 50.000 para registrar un nuevo abono de $50.000 COP. Se suma a los pagos ya registrados y el cliente recibe la confirmación con el total abonado y el saldo pendiente. Cada mensaje nuevo con monto registra otro abono; los reintentos del mismo mensaje de WhatsApp se procesan una sola vez. Los casos que requieren revisión aparecen aquí. STOP o un mensaje manual pausa la IA hasta SIGUE. SIGUE revisa los datos del chat, registra el pedido completo y envía los datos de pago. CONFIRMADO registra el nuevo abono y envía el recibo sin retomar la conversación. Últimos 30 comandos y confirmaciones.</p>
+          <div id="staff-confirmations"></div>
+        </section>
+
+        <section id="marketing" hidden class="section-block">
+          <div class="section-title"><div><p class="eyebrow">Adquisición</p><h2>Influencers & contenido</h2><p>La atribución se calcula exclusivamente con el código guardado en cada pedido real.</p></div><div class="section-actions"><button class="button secondary" id="open-referral" type="button">+ Crear código</button><button class="button primary" id="open-spend" type="button">+ Registrar inversión</button></div></div>
+          <div class="winner-strip" id="winner-strip"><span class="winner-label">Mejor señal</span><strong id="winner-name">Esperando pedidos atribuidos</strong><span id="winner-detail">—</span></div>
+          <div class="influencer-grid" id="influencer-grid"></div>
+
+          <article class="panel table-panel">
+            <div class="panel-head"><div><p class="eyebrow">Comparativo</p><h2>Códigos y piezas</h2></div></div>
+            <div class="table-scroll"><table><thead><tr><th>Código</th><th>Influencer</th><th>Pieza / campaña</th><th class="numeric">Pedidos</th><th class="numeric">Ingresos</th><th class="numeric">Inversión</th><th class="numeric">ROI</th><th></th></tr></thead><tbody id="codes-body"></tbody></table></div>
+          </article>
+
+          <article class="panel table-panel">
+            <div class="panel-head"><div><p class="eyebrow">Control</p><h2>Inversión registrada</h2></div></div>
+            <div class="table-scroll"><table><thead><tr><th>Fecha</th><th>Campaña</th><th>Influencer</th><th>Código</th><th>Notas</th><th class="numeric">Monto</th></tr></thead><tbody id="spend-body"></tbody></table></div>
+          </article>
+        </section>
+
+        <section id="goals" hidden class="section-block goals-section">
+          <div class="section-title"><div><p class="eyebrow">Metas de negocio · opcionales</p><h2>De preorden a restaurante</h2><p>Los objetivos iniciales se cargaron como valores de ejemplo: 40 / 200 / 900 pedidos y $2 / $12 / $70 millones. No son pronósticos ni requisitos para abrir un local. Puedes cambiarlos. El avance usa pedidos confirmados o entregados, pagados en su totalidad, de toda la historia; no solo el fin de semana seleccionado.</p></div></div>
+          <div class="goals-track" id="goals-track"></div>
+        </section>
+
+        <footer><span>King Cajun Operations</span><span>Fuente de verdad: WhatsApp ordering system</span></footer>
+      </main>
+    </div>
+
+    <dialog id="spend-dialog">
+      <form method="dialog" class="dialog-card" id="spend-form">
+        <div class="dialog-head"><div><p class="eyebrow">Marketing</p><h2>Nueva inversión</h2></div><button class="icon-button" value="cancel" aria-label="Cerrar">×</button></div>
+        <label><span>Campaña</span><input name="campaignName" placeholder="Ej. Lanzamiento septiembre" required></label>
+        <div class="form-row"><label><span>Influencer</span><select name="influencerId" id="spend-influencer"><option value="">Sin influencer</option></select></label><label><span>Código</span><select name="referralCodeId" id="spend-code"><option value="">Sin código específico</option></select></label></div>
+        <div class="form-row"><label><span>Monto (COP)</span><input name="amountCop" type="number" min="0" step="1000" required></label><label><span>Fecha</span><input name="spentAt" type="date" required></label></div>
+        <label><span>Notas</span><textarea name="notes" rows="3" placeholder="Opcional"></textarea></label>
+        <p class="form-error" id="spend-error"></p>
+        <div class="dialog-actions"><button class="button secondary" value="cancel">Cancelar</button><button class="button primary" id="save-spend" value="default">Guardar inversión</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="referral-dialog">
+      <form method="dialog" class="dialog-card" id="referral-form">
+        <div class="dialog-head"><div><p class="eyebrow">Creadores & referidos</p><h2 id="referral-title">Crear código</h2><p class="dialog-copy">El bot lo validará en el checkout y guardará la atribución en el pedido.</p></div><button class="icon-button" value="cancel" aria-label="Cerrar">×</button></div>
+        <label><span>Asignar a</span><select name="influencerId" id="referral-influencer" required></select></label>
+        <div id="new-creator-fields" class="new-creator-fields">
+          <label><span>Nombre del creador</span><input name="creatorName" placeholder="Ej. Cocina con Ana"></label>
+          <div class="form-row"><label><span>Usuario / handle</span><input name="creatorHandle" placeholder="@cocinaconana"></label><label><span>Plataforma</span><select name="creatorPlatform"><option value="Instagram">Instagram</option><option value="TikTok">TikTok</option><option value="YouTube">YouTube</option><option value="Otro">Otro</option></select></label></div>
+        </div>
+        <div class="form-row"><label><span>Código único</span><input name="code" maxlength="24" placeholder="ANA10" autocapitalize="characters" required><small class="field-help">3–24 letras, números, guion o guion bajo.</small></label><label><span>Campaña / pieza</span><input name="campaignName" placeholder="Ej. Reel de lanzamiento"></label></div>
+        <label><span>Enlace al video o post</span><input name="contentUrl" type="url" placeholder="https://instagram.com/..."></label>
+        <div class="form-row"><label><span>Válido desde</span><input name="validFrom" type="date"></label><label><span>Válido hasta</span><input name="validUntil" type="date"></label></div>
+        <label class="check-row"><input name="freeDelivery" type="checkbox"><span>Domicilio gratis con este código</span></label>
+        <label class="check-row"><input name="active" type="checkbox" checked><span>Código activo y disponible en el checkout de WhatsApp</span></label>
+        <div class="history-note" id="referral-history-note" hidden>Desactivar conserva todos los pedidos e ingresos históricos atribuidos a este código.</div>
+        <p class="form-error" id="referral-error"></p>
+        <div class="dialog-actions"><button class="button secondary" value="cancel">Cancelar</button><button class="button primary" id="save-referral" value="default">Crear y asignar</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="goal-dialog">
+      <form method="dialog" class="dialog-card" id="goal-form">
+        <div class="dialog-head"><div><p class="eyebrow">Meta de etapa</p><h2 id="goal-title">Editar meta</h2></div><button class="icon-button" value="cancel" aria-label="Cerrar">×</button></div>
+        <input type="hidden" name="stageKey">
+        <div class="form-row"><label><span>Pedidos objetivo</span><input name="orderTarget" type="number" min="1" required></label><label><span>Ingresos objetivo (COP)</span><input name="revenueTargetCop" type="number" min="1" step="100000" required></label></div>
+        <label><span>Fecha objetivo</span><input name="targetDate" type="date"></label>
+        <p class="form-error" id="goal-error"></p>
+        <div class="dialog-actions"><button class="button secondary" value="cancel">Cancelar</button><button class="button primary" id="save-goal" value="default">Guardar meta</button></div>
+      </form>
+    </dialog>
+
+    <dialog id="collection-dialog"><form method="dialog" class="dialog-card" id="collection-form">
+      <div class="dialog-head"><h2>Registrar pago recibido</h2><button class="icon-button" value="cancel" formnovalidate aria-label="Cerrar">×</button></div>
+      <p id="collection-summary"></p><p>Registra el dinero que ya recibiste al entregar el pedido. Esto actualiza las ventas cobradas.</p>
+      <input type="hidden" name="publicId"><label><span>Valor recibido (COP)</span><input name="amountCop" type="number" min="1" step="1" required></label>
+      <label><span>Referencia del comprobante o caja</span><input name="receiptReference" minlength="3" maxlength="120" required></label>
+      <label class="check-row"><input type="checkbox" name="verified" required><span>Confirmo que recibí este dinero</span></label>
+      <p id="collection-error" class="form-error" role="alert"></p><div class="dialog-actions"><button class="button secondary" value="cancel" formnovalidate>Cancelar</button><button class="button primary" id="record-collection" value="default">Registrar cobro</button></div>
+    </form></dialog>
+    <dialog id="transfer-dialog"><form method="dialog" class="dialog-card" id="transfer-form">
+      <div class="dialog-head"><div><p class="eyebrow">Transferencia directa</p><h2>Verificar pago recibido</h2></div><button class="icon-button" value="cancel" formnovalidate aria-label="Cerrar">×</button></div>
+      <p id="transfer-summary"></p><p>Revisa el abono en tu cuenta bancaria. Una captura del cliente no confirma que el dinero haya llegado. Al guardar, el pedido entra a cocina.</p>
+      <input type="hidden" name="publicId">
+      <label><span>Valor recibido (COP)</span><input name="amountCop" type="number" min="1" step="1" required></label>
+      <label><span>Referencia de la transacción bancaria</span><input name="bankReference" minlength="3" maxlength="120" required></label>
+      <label class="check-row"><input name="verified" type="checkbox" required><span>Verifiqué el abono en la cuenta.</span></label>
+      <p class="form-error" id="transfer-error" role="alert"></p><div class="dialog-actions"><button class="button secondary" value="cancel" formnovalidate>Cancelar</button><button class="button primary" id="confirm-transfer" value="default">Confirmar transferencia recibida</button></div>
+    </form></dialog>
+    <dialog id="coverage-dialog"><form method="dialog" class="dialog-card" id="coverage-form">
+      <div class="dialog-head"><h2>Coordinar entrega</h2><button class="icon-button" value="cancel" formnovalidate aria-label="Cerrar">×</button></div>
+      <p id="coverage-summary"></p><p>Primero acuerda la modalidad, ubicación, total y abono con el cliente por WhatsApp. Guardar registra ese acuerdo y habilita los recordatorios; no le envía un mensaje.</p>
+      <input type="hidden" name="publicId">
+      <label><span>Modalidad acordada</span><select name="method"><option value="delivery">Domicilio coordinado</option><option value="pickup">Recogida en El Poblado</option><option value="own_courier">Mensajero del cliente</option></select></label>
+      <label><span>Dirección o instrucciones acordadas</span><textarea name="details" minlength="8" maxlength="600" rows="3" required></textarea></label>
+      <label><span>Tarifa de domicilio acordada (COP)</span><input name="deliveryFeeCop" type="number" min="0" max="100000" step="1" required></label>
+      <p id="coverage-total"></p>
+      <label class="check-row"><input name="agreedWithCustomer" type="checkbox" required><span>Ya coordiné estos datos y valores con el cliente.</span></label>
+      <p id="coverage-error" class="form-error" role="alert"></p><div class="dialog-actions"><button class="button secondary" value="cancel" formnovalidate>Cancelar</button><button class="button primary" id="save-coverage" value="default">Guardar acuerdo</button></div>
+    </form></dialog>
+    <dialog id="location-dialog" aria-labelledby="location-title"><form id="location-form" class="dialog-card">
+      <div class="dialog-head"><div><p class="eyebrow">Resolver ubicación · <span id="location-order"></span></p><h2 id="location-title">Ubicación de entrega</h2></div><button id="location-close" type="button" class="icon-button" aria-label="Cerrar ubicación">×</button></div>
+      <div class="location-original"><span>Dirección del cliente</span><p id="location-original"></p></div>
+      <fieldset id="location-fields">
+        <label><span>Edificio o lugar (opcional)</span><input id="location-label" maxlength="160" placeholder="Ej. Portería de la unidad"></label>
+        <div class="location-step"><label for="location-search">1. Encuentra el lugar</label><div class="location-inline"><input id="location-search" maxlength="200" placeholder="Nombre del edificio, barrio y ciudad"><a class="button secondary" id="location-google" target="_blank" rel="noopener noreferrer">Google Maps ↗</a></div></div>
+        <div class="location-step"><label for="location-link">2. Pega el enlace: el pin se carga automáticamente</label><div class="location-inline"><input id="location-link" maxlength="4096" placeholder="https://maps.app.goo.gl/… o 6.20, -75.57" aria-describedby="location-import-status"><button id="location-import" type="button" class="button secondary">Cargar punto</button></div><p id="location-import-status" class="location-hint" role="status"></p></div>
+        <p class="location-hint">También puedes tocar el mapa o arrastrar el pin hasta la entrada del edificio.</p>
+        <div id="location-preview" aria-label="Selecciona la ubicación exacta de entrega"></div>
+        <p id="location-tile-warning" class="location-hint" hidden>No se pudo cargar parte del mapa. Usa «Ver pin en Google» para revisar el punto antes de guardarlo.</p>
+        <div class="location-point"><span id="location-coordinates"></span><a id="location-point-link" target="_blank" rel="noopener noreferrer" hidden>Ver pin en Google ↗</a></div>
+        <label class="check-row"><input type="checkbox" id="location-verified"><span>3. Este pin es correcto para la entrega de este pedido.</span></label>
+      </fieldset>
+      <p class="location-hint">Se guarda el punto del mapa para este pedido. La dirección original, el pago y el estado del pedido se conservan.</p>
+      <p id="location-error" class="form-error" role="alert"></p>
+      <p id="location-next-step" class="location-next-step" role="status"></p>
+      <button id="location-reset" type="button" class="table-action" hidden>Descartar borrador y actualizar pedido</button>
+      <div class="location-footer"><span id="location-state" role="status"></span><div class="dialog-actions"><button id="location-done" type="button" class="button secondary">Cerrar</button><button id="location-save" type="submit" class="button primary" disabled>Guardar ubicación</button></div></div>
+    </form></dialog>
+    <div class="toast" id="toast" role="status"></div>
+    <script src="/admin-assets/vendor/leaflet/leaflet.js"></script>
+    <script type="module" src="/admin-assets/app.js?v=home-operations-20261025"></script>
+  </body>
+</html>
